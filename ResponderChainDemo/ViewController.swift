@@ -8,24 +8,32 @@
 
 import UIKit
 
-class ViewWithButton: UIView {
+class ViewWithButtonAndLabel: UIView {
     
     let button: UIButton
+    let label: UILabel
     
     override init(frame: CGRect) {
+        label = UILabel()
+        label.textAlignment = .Center
+        label.text = "Touch the button"
+
         button = UIButton(type: .System)
-        button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("The Button", forState: .Normal)
         button.addTarget(nil, action: "onButtonTap:", forControlEvents: .TouchUpInside)
+        
+        let stackView = UIStackView(arrangedSubviews: [label, button])
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .Vertical
         
         super.init(frame: frame)
         
         backgroundColor = .yellowColor()
         
-        addSubview(button)
+        addSubview(stackView)
         
-        button.centerXAnchor.constraintEqualToAnchor(centerXAnchor).active = true
-        button.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
+        stackView.centerXAnchor.constraintEqualToAnchor(centerXAnchor).active = true
+        stackView.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -36,16 +44,27 @@ class ViewWithButton: UIView {
 
 class ViewController: UIViewController {
     
-    let viewWithButton = ViewWithButton(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+    let viewWithButtonAndLabel = ViewWithButtonAndLabel()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .whiteColor()
+        
+        view.addSubview(viewWithButtonAndLabel)
 
-        view.addSubview(viewWithButton)
+        viewWithButtonAndLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        let views = ["subView": viewWithButtonAndLabel]
+        var layoutConstraints = [NSLayoutConstraint]()
+        layoutConstraints += NSLayoutConstraint.constraintsWithVisualFormat("|-20-[subView]-20-|", options: [], metrics: nil, views: views)
+        layoutConstraints += NSLayoutConstraint.constraintsWithVisualFormat("V:|-20-[subView]-20-|", options: [], metrics: nil, views: views)
+        NSLayoutConstraint.activateConstraints(layoutConstraints)
+        
     }
 
     func onButtonTap(sender: UIButton) {
-        print("This button was clicked in the subview!")
+        viewWithButtonAndLabel.label.text = viewWithButtonAndLabel.label.text == "Yeah!" ? "Touch the button" : "Yeah!"
     }
 }
 
